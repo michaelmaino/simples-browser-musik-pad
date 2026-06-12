@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Mein Perfektes Musik Pad</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background: #121212; color: white; padding-top: 50px; }
+        .pad { padding: 40px 60px; font-size: 24px; margin: 15px; cursor: pointer; background: #1DB954; color: white; border: none; border-radius: 12px; font-weight: bold; }
+        .pad:active { background: #1aa34a; }
+        #status { margin-top: 30px; font-size: 18px; color: #b3b3b3; }
+    </style>
+</head>
+<body>
+
+    <h1>Mein Musik-Pad (Diagnose-Modus)</h1>
+    <p>Klicke auf die Buttons oder drücke die Tasten <strong>A</strong> oder <strong>S</strong></p>
+    
+    <button class="pad" onclick="playSample('snare')">Snare (Taste S)</button>
+    <button class="pad" onclick="powerKick()">Kick (Taste A)</button>
+
+    <!-- Wir versuchen hier BEIDE Endungen (.wav und .mp3) gleichzeitig, falls Windows uns austrickst! -->
+    <audio id="snare">
+        <source src="snare.wav" type="audio/wav">
+        <source src="snare.mp3" type="audio/mpeg">
+    </audio>
+
+    <audio id="kick">
+        <source src="kick.wav" type="audio/wav">
+        <source src="kick.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="status">Status: Warte auf Eingabe...</div>
+
+    <script>
+    const statusDiv = document.getElementById('status');
+
+    function logStatus(nachricht, farbe = '#b3b3b3') {
+        statusDiv.innerText = "Status: " + nachricht;
+        statusDiv.style.color = farbe;
+    }
+
+    function playSample(sampleId) {
+        const audio = document.getElementById(sampleId);
+        if (!audio) {
+            logStatus("Audio-Element '" + sampleId + "' nicht im HTML gefunden!", "red");
+            return;
+        }
+        
+        audio.currentTime = 0;
+        
+        audio.play()
+            .then(() => {
+                logStatus("Spiele " + sampleId.toUpperCase() + " erfolgreich ab! 🎉", "#1DB954");
+            })
+            .catch(error => {
+                console.error(error);
+                logStatus("Fehler beim Abspielen von " + sampleId.toUpperCase() + ". Datei fehlt im Ordner oder falsches Format!", "red");
+            });
+    }
+
+    // Sicherheitsfunktion für die Kick
+    function powerKick() {
+        playSample('kick');
+    }
+
+    window.addEventListener('keydown', (event) => {
+        if (event.key === 'a' || event.key === 'A') powerKick();
+        if (event.key === 's' || event.key === 'S') playSample('snare');
+    });
+    </script>
+</body>
+</html>
